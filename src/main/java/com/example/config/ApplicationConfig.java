@@ -18,6 +18,14 @@ public class ApplicationConfig {
     @Value("${app.name}")
     private String name;
 
+    // 1. this 'environment' means Spring Environment which can be System OS environment variables,
+    // VM variables or arguments, application arguments, as well as any configuration
+    // that you've loaded
+    // 2. # means use SpEL (Spring Expression Language)
+    // You can use SpEL to use multiple application-{env}.properties file
+    @Value("#{new Boolean(environment['spring.profiles.active']!='dev')}")
+    private boolean is24;
+
     @Autowired
     private GreetingService greetingService;
 
@@ -25,15 +33,8 @@ public class ApplicationConfig {
     private TimeService timeService;
 
     @Bean
-    @Profile("!dev")
     public TimeService timeService(){
-        return new TimeService(true);
-    }
-
-    @Bean
-    @Profile("dev")
-    public TimeService timeService12(){
-        return new TimeService(false);
+        return new TimeService(is24);
     }
 
     @Bean
